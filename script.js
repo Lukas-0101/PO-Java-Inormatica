@@ -1,38 +1,41 @@
 leven = 3
+var bal = {
+  diameter: 40,
+  straal: null,
+  x: null,
+  y: null,
+  snelheidX: 16,
+  snelheidY: 10,
 
-// Ping-pong bal
-
-class Help {
-  constructor(){
-    this.x = 100;
-    this.y = 100;
-    this.straal = 10;
-    this.diameter = 20;
-    this.speedX = 5;
-    this.speedY = 5;
-  }
-
-  teken() {
-    //kleur
-    fill(255,255,255,1);
-    ellipse(this.x,this.y,this.diameter);
-  }
-
-  beweeg(){
+  beweeg() {
     this.x += this.snelheidX;
     this.y += this.snelheidY;
-    
-    // botsen tegen muren
+
     if (this.x < this.straal || this.x > canvas.width - this.straal) {
       this.snelheidX *= -1;
     }
-    
     if (this.y < this.straal || this.y > canvas.height - this.straal) {
       this.snelheidY *= -1;
-  }
+    }
+  },
+
+  teken() {
+    push();
+    fill(0,255,0);
+    ellipse(this.x,this.y,this.diameter);
+    pop();
+  },
+  
+  // Check bal geraakt door Jos
+    wordtGeraakt(jos) {
+    if (this.x == jos.x && this.y == jos.y) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 }
-
 
 // Raster wordt gegenereerd
 class Raster {
@@ -107,7 +110,7 @@ class Jos {
   }
 
   toon() {
-    image(this.animatie[this.frameNummer],this.x,this.y,raster.celGrootte,raster.celGrootte);
+image(this.animatie[this.frameNummer],this.x,this.y,raster.celGrootte,raster.celGrootte);
   }
 }
 
@@ -149,9 +152,11 @@ function gameover(){
   dood.toon();
   */
   
-  // COMMENTAAR LATER FIXEN
+  // COMMENTAAR
   commentaar = ["Je bent slecht","Domdom","Hoe ben je dood gegaan","goo goo gah gah","test","yippi"]
-  text(Math.random(commentaar),50,400)
+  
+  // math.floor = naar beneden afronden + random = random commentaar
+  text(commentaar[Math.floor(Math.random() * commentaar.length)],50,400)
   
   noLoop();
 }
@@ -197,8 +202,9 @@ function setup() {
   Cindy.stapGrootte = 1*eve.stapGrootte;
   Cindy.sprite = loadImage("images/sprites/Bob100px/Bob.png");
 
-  // laad bal in
-  pingpong = new Help();
+  bal.straal = bal.diameter/2;
+    bal.x = bal.straal;
+    bal.y = canvas.height/4;
 }
 
 // Tekent alles op scherm
@@ -213,19 +219,19 @@ function draw() {
   alice.toon();
   bob.toon();
   Cindy.toon();
-  
-  
   bal.beweeg();
   bal.teken();
   
-  
+  // Levens
+  text("Aantal levens = " +leven+"",1,25);
+
   if (eve.wordtGeraakt(alice) || eve.wordtGeraakt(bob)||eve.wordtGeraakt(Cindy)) {
     leven --;
   }
+  if (eve.wordtGeraakt(bal)) {
+    leven ++;
+  }
   
-  // Levenstext
-  text("Aantal levens = " +leven+"",1,25);
-
   if (leven == 0){
       gameover();
  }
