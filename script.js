@@ -1,4 +1,34 @@
+//aantal levens
 leven = 3
+
+// teken omgekeerde piramide
+/*
+function tekenOmgekeerdePiramide(aantalLagen) {
+  let breedte = 900 / aantalLagen;
+  let hoogte = breedte / 2;
+
+  push(); // zodat we de canvas-transformatie niet verpesten
+  translate(0, 0);
+  fill('lightslategray');
+  stroke('darkslategray');
+  noStroke();
+
+  function recursieveLaag(n) {
+    if (n > 0) {
+      for (let nr = 0; nr < n; nr++) {
+        rect(nr * breedte, 0, breedte, hoogte);
+      }
+      translate(breedte / 2, hoogte);
+      recursieveLaag(n - 1);
+    }
+  }
+
+  recursieveLaag(aantalLagen);
+  pop();
+}
+  */
+
+// variabel bal
 var bal = {
   diameter: 40,
   straal: null,
@@ -7,6 +37,7 @@ var bal = {
   snelheidX: 16,
   snelheidY: 10,
 
+  // Bal beweegt volgens 
   beweeg() {
     this.x += this.snelheidX;
     this.y += this.snelheidY;
