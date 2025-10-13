@@ -1,5 +1,38 @@
 leven = 3
 
+// Ping-pong bal
+
+class Help {
+  constructor(){
+    this.x = 100;
+    this.y = 100;
+    this.straal = 10;
+    this.diameter = 20;
+    this.speedX = 5;
+    this.speedY = 5;
+  }
+
+  teken() {
+    //kleur
+    fill(255,255,255,1);
+    ellipse(this.x,this.y,this.diameter);
+  }
+
+  beweeg(){
+    this.x += this.snelheidX;
+    this.y += this.snelheidY;
+    
+    // botsen tegen muren
+    if (this.x < this.straal || this.x > canvas.width - this.straal) {
+      this.snelheidX *= -1;
+    }
+    
+    if (this.y < this.straal || this.y > canvas.height - this.straal) {
+      this.snelheidY *= -1;
+  }
+  }
+}
+
 
 // Raster wordt gegenereerd
 class Raster {
@@ -103,17 +136,48 @@ function preload() {
   brug = loadImage("images//backgrounds/dame_op_brug_1800.jpg");
 }
 
+// laadt textsize verloren / gewonnen in
+function gameover(){
+  textFont("Verdana");
+  textSize(90);
+  background('red');
+  fill('white');
+  text("Je hebt verloren...",30,300);
+  
+  /*
+  dood = loadimage("images/sprites/flatboy/Dead(15).png")
+  dood.toon();
+  */
+  
+  // COMMENTAAR LATER FIXEN
+  commentaar = ["Je bent slecht","Domdom","Hoe ben je dood gegaan","goo goo gah gah","test","yippi"]
+  text(Math.random(commentaar),50,400)
+  
+  noLoop();
+}
+function gewonnen(){
+  textFont("Verdana");
+  textSize(90);
+  background('green');
+  fill('white');
+  text("Je hebt gewonnen!",30,300);
+  noLoop();
+}
+
 function setup() {
   canvas = createCanvas(900,600);
   canvas.parent();
   frameRate(10);
-  textFont("Verdana");
-  textSize(90);
+
+  // laadt textsize levens in
+  textFont("Monospace");
+  textSize(30);
+  
   // laadt raster in
   raster = new Raster(12,18);
   // bereken grootte cel
   raster.berekenCelGrootte();
-
+  
   eve = new Jos();
   eve.stapGrootte = 1*raster.celGrootte;
   for (var b = 0;b < 6;b++) {
@@ -133,8 +197,11 @@ function setup() {
   Cindy.stapGrootte = 1*eve.stapGrootte;
   Cindy.sprite = loadImage("images/sprites/Bob100px/Bob.png");
 
+  // laad bal in
+  pingpong = new Help();
 }
 
+// Tekent alles op scherm
 function draw() {
   background(brug);
   raster.teken();
@@ -147,24 +214,23 @@ function draw() {
   bob.toon();
   Cindy.toon();
   
-  // FIX DE LEVENSTEXT
-  text("Aantal levens = [" +leven+"]",100,30);
-
+  
+  bal.beweeg();
+  bal.teken();
+  
+  
   if (eve.wordtGeraakt(alice) || eve.wordtGeraakt(bob)||eve.wordtGeraakt(Cindy)) {
     leven --;
   }
+  
+  // Levenstext
+  text("Aantal levens = " +leven+"",1,25);
 
   if (leven == 0){
-      background('red');
-      fill('white');
-      text("Je hebt verloren...",30,300);
-      noLoop();
+      gameover();
  }
 
   if (eve.gehaald) {
-    background('green');
-    fill('white');
-    text("Je hebt gewonnen!",30,300);
-    noLoop();
+    gewonnen();
   }
 }
