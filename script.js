@@ -1,6 +1,7 @@
 //aantal levens
 leven = 3
 
+// variabelen voor omgekeerde piramide
 var aantalLagen = 100;
 var breedte;
 var hoogte;
@@ -10,10 +11,10 @@ function tekenOmgekeerdePiramide(aantalLagen) {
   let breedte = 900 / aantalLagen;
   let hoogte = breedte / 2;
 
-  push(); // zodat alleen piramide dit heeft
+  push(); // zodat dit alleen geldt voor piramide
   translate(0, 0);
-  fill('lightslategray');
-  stroke('darkslategray');
+  fill('lightgrey');
+  stroke('darkgrey');
   noStroke();
 
   // omgekeerde piramide
@@ -23,15 +24,16 @@ function tekenOmgekeerdePiramide(aantalLagen) {
         rect(nr * breedte, 0, breedte, hoogte);
       }
       translate(breedte / 2, hoogte);
+      // roept functie opnieuw, maar -1 n, dus omgekeerde piramide
       recursieveLaag(n - 1);
     }
   }
-
+  // start de functie
   recursieveLaag(aantalLagen);
   pop();
 }
 
-// variabel bal
+// variabel bal de speler kan nog steeds niet checken als de bal is geraakt :(
 var bal = {
   diameter: 40,
   straal: null,
@@ -63,9 +65,10 @@ var bal = {
   // Check bal geraakt door Jos HEB VERANDERD CHECK ALS DIT WERKT JUSTIN
   wordtGeraakt(jos) {
     // bereken afstand tussen bal en Jos
-    let afstand = dist(this.x, this.y, jos.x + Raster.celGrootte / 2, jos.y + Raster.celGrootte / 2);
-    // check of Jos bal raakt
-    if (afstand < this.straal + Raster.celGrootte / 2) {
+    let afstand = dist(this.x, this.y, jos.x + raster.celGrootte / 2, jos.y + raster.celGrootte / 2);
+
+    // check als afstand < balstraal + halve cel
+    if (afstand < this.straal + raster.celGrootte * 0.5) {
       return true;
     } else {
       return false;
@@ -93,8 +96,9 @@ teken() {
   for (var rij = 0; rij < this.aantalRijen; rij++) {
     // loop door elke kolom
     for (var kolom = 0; kolom < this.aantalKolommen; kolom++) {
-      // check of het een randcel is
+      // check of cel een randcel is
       if (
+        // rij/kolom 0, want dat is buitenste rij/kolom
         rij === 0 || 
         rij === this.aantalRijen - 1 || 
         kolom === 0 || 
@@ -102,7 +106,7 @@ teken() {
       ) {
         stroke('blue'); // randcellen blauw
       } else {
-        stroke('grey'); // binnenraster grijs
+        stroke('grey'); // binnen cellen grijs
       }
       // teken cel
       rect(kolom * this.celGrootte, rij * this.celGrootte, this.celGrootte, this.celGrootte);
@@ -113,6 +117,7 @@ teken() {
 }
 }
 
+// speler
 class Jos {
   constructor() {
     this.x = 400;
@@ -150,6 +155,7 @@ class Jos {
     }
   }
 
+  // Check of  Jos geraakt wordt door vijand
   wordtGeraakt(vijand) {
     if (this.x == vijand.x && this.y == vijand.y) {
       return true;
@@ -159,11 +165,13 @@ class Jos {
     }
   }
 
+  // Zorgt voor juiste Jos frame
   toon() {
 image(this.animatie[this.frameNummer],this.x,this.y,raster.celGrootte,raster.celGrootte);
   }
 }
 
+// Vijanden
 class Vijand {
   constructor(x,y) {
     this.x = x;
@@ -172,6 +180,7 @@ class Vijand {
     this.stapGrootte = null;
   }
 
+  // Vijanden bewegen random
   beweeg() {
     this.x += floor(random(-1,2))*this.stapGrootte;
     this.y += floor(random(-1,2))*this.stapGrootte;
@@ -180,11 +189,13 @@ class Vijand {
     this.y = constrain(this.y,0,canvas.height - raster.celGrootte);
   }
 
+  // Vijanden worden getekend
   toon() {
     image(this.sprite,this.x,this.y,raster.celGrootte,raster.celGrootte);
   }
 }
 
+// achtergronden
 function preload() {
   brug = loadImage("images//backgrounds/dame_op_brug_1800.jpg");
 }
@@ -219,6 +230,7 @@ function gewonnen(){
   noLoop();
 }
 
+// Laadt alles in
 function setup() {
   canvas = createCanvas(900,600);
   canvas.parent();
@@ -232,7 +244,8 @@ function setup() {
   raster = new Raster(12,18);
   // bereken grootte cel
   raster.berekenCelGrootte();
-  
+
+  // laadt de speler in
   eve = new Jos();
   eve.stapGrootte = 1*raster.celGrootte;
   for (var b = 0;b < 6;b++) {
@@ -240,6 +253,7 @@ function setup() {
     eve.animatie.push(frameEve);
   }
 
+  // laadt vijanden in
   alice = new Vijand(700,200);
   alice.stapGrootte = 1*eve.stapGrootte;
   alice.sprite = loadImage("images/sprites/Alice100px/Alice.png");
@@ -252,6 +266,7 @@ function setup() {
   Cindy.stapGrootte = 1*eve.stapGrootte;
   Cindy.sprite = loadImage("images/sprites/Bob100px/Bob.png");
 
+  // laadt bal in
   bal.straal = bal.diameter/2;
     bal.x = bal.straal;
     bal.y = canvas.height/4;
@@ -261,6 +276,9 @@ function setup() {
 function draw() {
   background(brug);
   raster.teken();
+
+  tekenOmgekeerdePiramide(aantalLagen);
+  
   eve.beweeg();
   alice.beweeg();
   bob.beweeg();
@@ -272,20 +290,27 @@ function draw() {
   bal.beweeg();
   bal.teken();
   
-  // Levens
+  // Levens (afbeeldingen komen ooit hier)
   text("Aantal levens = " +leven+"",1,25);
 
+  // Check of speler geraakt door vijand
   if (eve.wordtGeraakt(alice) || eve.wordtGeraakt(bob)||eve.wordtGeraakt(Cindy)) {
     leven --;
   }
+  // Check of speler geraakt door bal
   if (eve.wordtGeraakt(bal)) {
     leven ++;
+    // verplaats de bal na aanraking, zodat niet oneindig levens
+    bal.x = random(bal.straal, canvas.width - bal.straal);
+    bal.y = random(bal.straal, canvas.height - bal.straal);
   }
-  
+
+  // Check of speler dood
   if (leven == 0){
       gameover();
  }
 
+  // Check of speler gewonnen
   if (eve.gehaald) {
     gewonnen();
   }
