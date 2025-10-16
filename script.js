@@ -57,12 +57,14 @@ var bal = {
     pop();
   },
   
-  // Check bal geraakt door Jos
-    wordtGeraakt(jos) {
-    if (this.x == jos.x && this.y == jos.y) {
+  // Check bal geraakt door Jos HEB VERANDERD CHECK ALS DIT WERKT JUSTIN
+  wordtGeraakt(jos) {
+    // bereken afstand tussen bal en Jos
+    let afstand = dist(this.x, this.y, jos.x + Raster.celGrootte / 2, jos.y + Raster.celGrootte / 2);
+    // check of Jos bal raakt
+    if (afstand < this.straal + Raster.celGrootte / 2) {
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   }
