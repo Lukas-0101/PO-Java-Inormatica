@@ -11,7 +11,7 @@ function tekenOmgekeerdePiramide(aantalLagen) {
   let breedte = 900 / aantalLagen;
   let hoogte = breedte / 2;
 
-  push(); // zodat dit alleen geldt voor piramide
+  push(); // alleen voor piramide
   translate(0, 0);
   fill('lightgrey');
   stroke('darkgrey');
@@ -28,12 +28,13 @@ function tekenOmgekeerdePiramide(aantalLagen) {
       recursieveLaag(n - 1);
     }
   }
+  
   // start de functie
   recursieveLaag(aantalLagen);
   pop();
 }
 
-// variabel bal de speler kan nog steeds niet checken als de bal is geraakt :(
+// variabel bal (de speler kan nog steeds niet checken als de bal is geraakt)
 var bal = {
   diameter: 40,
   straal: null,
@@ -66,7 +67,8 @@ var bal = {
   wordtGeraakt(jos) {
     // bereken afstand tussen bal en Jos
     let afstand = dist(this.x, this.y, jos.x + raster.celGrootte / 2, jos.y + raster.celGrootte / 2);
-
+    //console.log(afstand);
+    //text(afstand, 300, 300);
     // check als afstand < balstraal + halve cel
     if (afstand < this.straal + raster.celGrootte * 0.5) {
       return true;
@@ -104,9 +106,9 @@ teken() {
         kolom === 0 || 
         kolom === this.aantalKolommen - 1
       ) {
-        stroke('blue'); // randcellen blauw
+        fill('lightblue'); // randcellen blauw
       } else {
-        stroke('grey'); // binnen cellen grijs
+        fill('transparent'); // binnen cellen grijs
       }
       // teken cel
       rect(kolom * this.celGrootte, rij * this.celGrootte, this.celGrootte, this.celGrootte);
@@ -171,6 +173,25 @@ image(this.animatie[this.frameNummer],this.x,this.y,raster.celGrootte,raster.cel
   }
 }
 
+// raket
+/*
+class Raket{
+  constructor(x,y){
+    this.x = x
+    this.y = y
+    this.speed = 17
+  }
+  beweeg(){
+    this.y -= this.speed
+    this.speed -= 0.5
+  }
+  toon() {
+    loadImage(images/sprites/raket.jpg);
+  }
+  
+}
+*/
+
 // Vijanden
 class Vijand {
   constructor(x,y) {
@@ -221,6 +242,7 @@ function gameover(){
   
   noLoop();
 }
+  
 function gewonnen(){
   textFont("Verdana");
   textSize(90);
@@ -266,6 +288,12 @@ function setup() {
   Cindy.stapGrootte = 1*eve.stapGrootte;
   Cindy.sprite = loadImage("images/sprites/Bob100px/Bob.png");
 
+  // laadt raket in
+  /*
+  Raket = new raket(100,100);
+  raket.sprite = loadImage("images/sprites/Raket100px/Raket.png")
+  */
+
   // laadt bal in
   bal.straal = bal.diameter/2;
     bal.x = bal.straal;
@@ -287,6 +315,10 @@ function draw() {
   alice.toon();
   bob.toon();
   Cindy.toon();
+  /*
+  raket.beweeg();
+  raket.toon();
+  */
   bal.beweeg();
   bal.teken();
   
