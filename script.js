@@ -1,18 +1,22 @@
 //aantal levens
 leven = 3
 
+var aantalLagen = 100;
+var breedte;
+var hoogte;
+
 // teken omgekeerde piramide
-/*
 function tekenOmgekeerdePiramide(aantalLagen) {
   let breedte = 900 / aantalLagen;
   let hoogte = breedte / 2;
 
-  push(); // zodat we de canvas-transformatie niet verpesten
+  push(); // zodat alleen piramide dit heeft
   translate(0, 0);
   fill('lightslategray');
   stroke('darkslategray');
   noStroke();
 
+  // omgekeerde piramide
   function recursieveLaag(n) {
     if (n > 0) {
       for (let nr = 0; nr < n; nr++) {
@@ -26,7 +30,6 @@ function tekenOmgekeerdePiramide(aantalLagen) {
   recursieveLaag(aantalLagen);
   pop();
 }
-  */
 
 // variabel bal
 var bal = {
@@ -81,19 +84,33 @@ class Raster {
   berekenCelGrootte() {
     this.celGrootte = canvas.width / this.aantalKolommen;
   }
+// Raster wordt getekend met blauwe rand
+teken() {
+  push();
+  noFill();
 
-  teken() {
-    push();
-    noFill();
-    stroke('grey');
-    // teken raster
-    for (var rij = 0;rij < this.aantalRijen;rij++) {
-      for (var kolom = 0;kolom < this.aantalKolommen;kolom++) {
-        rect(kolom*this.celGrootte,rij*this.celGrootte,this.celGrootte,this.celGrootte);
+  // loop door elke rij
+  for (var rij = 0; rij < this.aantalRijen; rij++) {
+    // loop door elke kolom
+    for (var kolom = 0; kolom < this.aantalKolommen; kolom++) {
+      // check of het een randcel is
+      if (
+        rij === 0 || 
+        rij === this.aantalRijen - 1 || 
+        kolom === 0 || 
+        kolom === this.aantalKolommen - 1
+      ) {
+        stroke('blue'); // randcellen blauw
+      } else {
+        stroke('grey'); // binnenraster grijs
       }
+      // teken cel
+      rect(kolom * this.celGrootte, rij * this.celGrootte, this.celGrootte, this.celGrootte);
     }
-    pop();
   }
+
+  pop();
+}
 }
 
 class Jos {
