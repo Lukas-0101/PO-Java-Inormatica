@@ -330,9 +330,8 @@ function draw() {
     leven --;
   }
   // Check of speler geraakt door bal
-  if (eve.wordtGeraakt(bal)) {
+  if (bal.wordtGeraakt(eve)) {
     leven ++;
-    // verplaats de bal na aanraking, zodat niet oneindig levens
     bal.x = random(bal.straal, canvas.width - bal.straal);
     bal.y = random(bal.straal, canvas.height - bal.straal);
   }
