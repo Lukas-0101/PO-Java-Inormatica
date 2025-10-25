@@ -6,6 +6,7 @@ var aantalLagen = 100;
 var breedte;
 var hoogte;
 
+// variabelen voor raketten
 var raket1;
 var raket2;
 var raket3;
@@ -126,7 +127,7 @@ teken() {
 // speler
 class Jos {
   constructor() {
-    this.x = 400;
+    this.x = 200;
     this.y = 300;
     this.animatie = [];
     this.frameNummer =  3;
@@ -171,6 +172,7 @@ class Jos {
     }
   }
 
+
   // Zorgt voor juiste Jos frame
   toon() {
 image(this.animatie[this.frameNummer],this.x,this.y,raster.celGrootte,raster.celGrootte);
@@ -182,20 +184,19 @@ class Raket {
   constructor(x, y, snelheid) {
     this.x = x;
     this.y = y;
-    this.snelheid = snelheid; // verticale snelheid
+    this.snelheid = snelheid; // snelheid van raket
   }
 
   beweeg() {
-
-    this.y -=this.snelheid;
-    this.snelheid -= 0.1;
-    if (this.y < 75) {
-      this.y = 75;
-      this.snelheid = -this.snelheid; // omkeren richting omlaag
+    this.y -=this.snelheid;  // raket beweegt omhoog
+    this.snelheid -= 0.1;   // snelheid verlaagt
+    if (this.y < 0) { // als raket boven de rand komt
+      this.y = 0; 
+      this.snelheid = -this.snelheid; // richting omkeren naar beneden
     }
-    if (this.y > height - 75) {
-      this.y = height - 75;
-      this.snelheid = -this.snelheid; // omkeren richting omhoog
+    if (this.y > height - 50) { // als raket bij de rand komt
+      this.y = height - 50;
+      this.snelheid = -this.snelheid; // richting omkeren naar boven
     }
 
 
@@ -204,6 +205,19 @@ class Raket {
   toon() {
     image(this.sprite,this.x,this.y,raster.celGrootte,raster.celGrootte);
   }
+
+  /*werkt niet
+  wordtGeraakt(jos) {
+  // bereken afstand tussen bal en Jos
+  let afstand = dist(this.x, this.y, jos.x + raster.celGrootte / 2, jos.y + raster.celGrootte / 2);
+  if (afstand < 50 + raster.celGrootte * 0.5) {
+    return true;
+  } else {
+    return false;
+    }
+  }
+
+*/
 }
 
 // Vijanden
@@ -291,7 +305,7 @@ function setup() {
   }
 
   // laadt vijanden in
-  alice = new Vijand(700,200);
+  alice = new Vijand(700,700);
   alice.stapGrootte = 1*eve.stapGrootte;
   alice.sprite = loadImage("images/sprites/Alice100px/Alice.png");
 
@@ -303,11 +317,12 @@ function setup() {
   Cindy.stapGrootte = 1*eve.stapGrootte;
   Cindy.sprite = loadImage("images/sprites/Bob100px/Bob.png");
 
-  raket1 = new Raket(225, 375, 5);
+  // laadt raketten in met random snelheid en positie
+  raket1 = new Raket(random(500,850), 600, random(5, 11));
   raket1.sprite = loadImage("images/sprites/Raket.jpg");
-  raket2 = new Raket(275, 350, 6);
+  raket2 = new Raket(random(500,850), 600,random(5, 11));
   raket2.sprite = loadImage("images/sprites/Raket.jpg");
-  raket3 = new Raket(325, 325, 4);
+  raket3 = new Raket(random(500,850), 600, random(5, 11));
   raket3.sprite = loadImage("images/sprites/Raket.jpg");
 
   // laadt bal in
@@ -357,7 +372,11 @@ function draw() {
     bal.x = random(bal.straal, canvas.width - bal.straal);
     bal.y = random(bal.straal, canvas.height - bal.straal);
   }
-
+/* werkt  niet
+  if (raket.wordtGeraakt(eve)) {
+    leven --;
+  }
+*/
   // Check of speler dood
   if (leven == 0){
       gameover();
