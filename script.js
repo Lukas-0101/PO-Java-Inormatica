@@ -6,6 +6,10 @@ var aantalLagen = 100;
 var breedte;
 var hoogte;
 
+var raket1;
+var raket2;
+var raket3;
+
 // teken omgekeerde piramide
 function tekenOmgekeerdePiramide(aantalLagen) {
   let breedte = 900 / aantalLagen;
@@ -174,23 +178,33 @@ image(this.animatie[this.frameNummer],this.x,this.y,raster.celGrootte,raster.cel
 }
 
 // raket
-/*
-class Raket{
-  constructor(x,y){
-    this.x = x
-    this.y = y
-    this.speed = 17
+class Raket {
+  constructor(x, y, snelheid) {
+    this.x = x;
+    this.y = y;
+    this.snelheid = snelheid; // verticale snelheid
   }
-  beweeg(){
-    this.y -= this.speed
-    this.speed -= 0.5
+
+  beweeg() {
+
+    this.y -=this.snelheid;
+    this.snelheid -= 0.1;
+    if (this.y < 75) {
+      this.y = 75;
+      this.snelheid = -this.snelheid; // omkeren richting omlaag
+    }
+    if (this.y > height - 75) {
+      this.y = height - 75;
+      this.snelheid = -this.snelheid; // omkeren richting omhoog
+    }
+
+
   }
+
   toon() {
-    loadImage(images/sprites/raket.jpg);
+    image(this.sprite,this.x,this.y,raster.celGrootte,raster.celGrootte);
   }
-  
 }
-*/
 
 // Vijanden
 class Vijand {
@@ -218,7 +232,8 @@ class Vijand {
 
 // achtergronden
 function preload() {
-  brug = loadImage("images//backgrounds/dame_op_brug_1800.jpg");
+  brug = loadImage("images/backgrounds/dame_op_brug_1800.jpg");
+  //loadImage("images/sprites/Raket.jpg");
 }
 
 // laadt textsize verloren / gewonnen in
@@ -235,7 +250,7 @@ function gameover(){
   */
   
   // COMMENTAAR
-  commentaar = ["Je bent slecht","Domdom","Hoe ben je dood gegaan","goo goo gah gah","test","yippi"]
+  commentaar = ["Jammer","Probeer opnieuw","Geef niet op!","Kom op!","Helaas", "Je kunt het"]
   
   // math.floor = naar beneden afronden + random = random commentaar
   text(commentaar[Math.floor(Math.random() * commentaar.length)],50,400)
@@ -288,11 +303,12 @@ function setup() {
   Cindy.stapGrootte = 1*eve.stapGrootte;
   Cindy.sprite = loadImage("images/sprites/Bob100px/Bob.png");
 
-  // laadt raket in
-  /*
-  Raket = new raket(100,100);
-  raket.sprite = loadImage("images/sprites/Raket100px/Raket.png")
-  */
+  raket1 = new Raket(225, 375, 5);
+  raket1.sprite = loadImage("images/sprites/Raket.jpg");
+  raket2 = new Raket(275, 350, 6);
+  raket2.sprite = loadImage("images/sprites/Raket.jpg");
+  raket3 = new Raket(325, 325, 4);
+  raket3.sprite = loadImage("images/sprites/Raket.jpg");
 
   // laadt bal in
   bal.straal = bal.diameter/2;
@@ -315,10 +331,16 @@ function draw() {
   alice.toon();
   bob.toon();
   Cindy.toon();
-  /*
-  raket.beweeg();
-  raket.toon();
-  */
+  
+  raket1.beweeg();
+  raket1.toon();
+
+  raket2.beweeg();
+  raket2.toon();
+
+  raket3.beweeg();
+  raket3.toon();
+  
   bal.beweeg();
   bal.teken();
   
