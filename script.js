@@ -68,7 +68,7 @@ var bal = {
     pop();
   },
   
-  // Check bal geraakt door Jos HEB VERANDERD CHECK ALS DIT WERKT JUSTIN
+  // Check bal geraakt door Jos
   wordtGeraakt(jos) {
     // bereken afstand tussen bal en Jos
     let afstand = dist(this.x, this.y, jos.x + raster.celGrootte / 2, jos.y + raster.celGrootte / 2);
@@ -185,6 +185,8 @@ class Raket {
     this.x = x;
     this.y = y;
     this.snelheid = snelheid; // snelheid van raket
+    this.sprite = null;
+
   }
 
   beweeg() {
@@ -206,18 +208,14 @@ class Raket {
     image(this.sprite,this.x,this.y,raster.celGrootte,raster.celGrootte);
   }
 
-  /*werkt niet
   wordtGeraakt(jos) {
-  // bereken afstand tussen bal en Jos
-  let afstand = dist(this.x, this.y, jos.x + raster.celGrootte / 2, jos.y + raster.celGrootte / 2);
-  if (afstand < 50 + raster.celGrootte * 0.5) {
-    return true;
-  } else {
-    return false;
-    }
+    // Bereken de afstand tussen de raket en Jos (midden van de raket, want this.x en this.y zijn de linker bovenhoek)
+      let raketMiddenX = this.x + raster.celGrootte / 2;
+      let raketMiddenY = this.y + raster.celGrootte / 2;
+      let afstand = dist(raketMiddenX, raketMiddenY, jos.x + raster.celGrootte / 2, jos.y + raster.celGrootte / 2);
+      return afstand < this.straal + raster.celGrootte / 2;
   }
 
-*/
 }
 
 // Vijanden
@@ -320,10 +318,13 @@ function setup() {
   // laadt raketten in met random snelheid en positie
   raket1 = new Raket(random(500,850), 600, random(5, 11));
   raket1.sprite = loadImage("images/sprites/Raket.jpg");
+  raket1.straal = raster.celGrootte / 2;
   raket2 = new Raket(random(500,850), 600,random(5, 11));
   raket2.sprite = loadImage("images/sprites/Raket.jpg");
+  raket2.straal = raster.celGrootte / 2;
   raket3 = new Raket(random(500,850), 600, random(5, 11));
   raket3.sprite = loadImage("images/sprites/Raket.jpg");
+  raket3.straal = raster.celGrootte / 2;
 
   // laadt bal in
   bal.straal = bal.diameter/2;
@@ -331,7 +332,7 @@ function setup() {
     bal.y = canvas.height/4;
 }
 
-// Tekent alles op scherm
+// Tekent alles op scherm + checkt of speler geraakt wordt door vijand en raket
 function draw() {
   background(brug);
   raster.teken();
@@ -363,20 +364,34 @@ function draw() {
   text("Aantal levens = " +leven+"",1,25);
 
   // Check of speler geraakt door vijand
-  if (eve.wordtGeraakt(alice) || eve.wordtGeraakt(bob)||eve.wordtGeraakt(Cindy)) {
+  if (
+    eve.wordtGeraakt(alice) || 
+    eve.wordtGeraakt(bob) ||
+    eve.wordtGeraakt(Cindy)){
     leven --;
   }
+  // Check of speler geraakt door raket
+  if (raket1.wordtGeraakt(eve) || 
+      raket2.wordtGeraakt(eve) || 
+      raket3.wordtGeraakt(eve)) {
+      leven--;
+    // Reset raketten positie
+      raket1.x = random(raket1.straal, canvas.width - raket1.straal);
+      raket1.y = random(raket1.straal, canvas.height - raket1.straal);
+      raket2.x = random(raket2.straal, canvas.width - raket2.straal);
+      raket2.y = random(raket2.straal, canvas.height - raket2.straal);
+      raket3.x = random(raket3.straal, canvas.width - raket3.straal);
+      raket3.y = random(raket3.straal, canvas.height - raket3.straal);
+  }
+
   // Check of speler geraakt door bal
   if (bal.wordtGeraakt(eve)) {
     leven ++;
+    // Reset bal positie
     bal.x = random(bal.straal, canvas.width - bal.straal);
     bal.y = random(bal.straal, canvas.height - bal.straal);
   }
-/* werkt  niet
-  if (raket.wordtGeraakt(eve)) {
-    leven --;
-  }
-*/
+
   // Check of speler dood
   if (leven == 0){
       gameover();
