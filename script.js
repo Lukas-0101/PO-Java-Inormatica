@@ -332,7 +332,7 @@ function setup() {
     bal.y = canvas.height/4;
 }
 
-// Tekent alles op scherm + checkt of speler geraakt wordt door vijand en raket
+// Tekent alles op scherm + code speler raakt vijand / raket
 function draw() {
   background(brug);
   raster.teken();
@@ -370,18 +370,23 @@ function draw() {
     eve.wordtGeraakt(Cindy)){
     leven --;
   }
-  // Check of speler geraakt door raket
-  if (raket1.wordtGeraakt(eve) || 
-      raket2.wordtGeraakt(eve) || 
-      raket3.wordtGeraakt(eve)) {
-      leven--;
-    // Reset raketten positie
-      raket1.x = random(raket1.straal, canvas.width - raket1.straal);
-      raket1.y = random(raket1.straal, canvas.height - raket1.straal);
-      raket2.x = random(raket2.straal, canvas.width - raket2.straal);
-      raket2.y = random(raket2.straal, canvas.height - raket2.straal);
-      raket3.x = random(raket3.straal, canvas.width - raket3.straal);
-      raket3.y = random(raket3.straal, canvas.height - raket3.straal);
+  
+  // Check of speler geraakt door raket en reset raketten positie
+  if (raket1.wordtGeraakt(eve)) {
+    leven--;
+    raket1.x = random(500,850);
+    raket1.y = 600;
+    raket1.snelheid = random(5, 11);
+  } else if (raket2.wordtGeraakt(eve)) {
+    leven--;
+    raket2.x = random(500,850);
+    raket2.y = 600;
+    raket2.snelheid = random(5, 11);
+  } else if (raket3.wordtGeraakt(eve)) {
+    leven--;
+    raket3.x =random(500,850);
+    raket3.y = 600;
+    raket3.snelheid = random(5, 11);
   }
 
   // Check of speler geraakt door bal
