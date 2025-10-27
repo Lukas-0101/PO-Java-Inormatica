@@ -82,7 +82,7 @@ function toonCredits() {
   text("CREDITS", width / 2, 100);
 
   textSize(24);
-  text("Gemaakt door: Justin Fung en Lukas Li\n\nOntwikkeld in p5.js", width / 2, height / 2);
+  text("Gemaakt door: Justin Fung en Lukas Li\n\nOntwikkeld in p5.js\n\nSprites: Justin Fung", width / 2, height / 2);
   pop();
 
   // Terugknop
@@ -221,6 +221,10 @@ class Jos {
 
   // Jos beweegt met WASD
   beweeg() {
+    // beweegt maar om de 2 frames zodat jos niet te snel is
+    if (frameCount % 2 !== 0) return; 
+
+    // stap naar links, rechts, boven, beneden
     if (keyIsDown(65)) {
       this.x -= this.stapGrootte;
       this.frameNummer = 2;
@@ -237,14 +241,15 @@ class Jos {
       this.y += this.stapGrootte;
       this.frameNummer = 5;
     }
-    // Jos blijft binnen canvas
-    this.x = constrain(this.x,0,canvas.width);
-    this.y = constrain(this.y,0,canvas.height - raster.celGrootte);
-  
-    if (this.x == canvas.width) {
+
+    this.x = constrain(this.x, 0, canvas.width - raster.celGrootte);
+    this.y = constrain(this.y, 0, canvas.height - raster.celGrootte);
+
+    if (this.x >= canvas.width - raster.celGrootte) {
       this.gehaald = true;
     }
   }
+
 
   // Check of  Jos geraakt wordt door vijand
   wordtGeraakt(vijand) {
@@ -310,11 +315,14 @@ class Vijand {
 
   // Vijanden bewegen random
   beweeg() {
-    this.x += floor(random(-1,2))*this.stapGrootte;
-    this.y += floor(random(-1,2))*this.stapGrootte;
-    // Vijanden blijven binnen canvas
-    this.x = constrain(this.x,0,canvas.width - raster.celGrootte);
-    this.y = constrain(this.y,0,canvas.height - raster.celGrootte);
+    // bewegen om de 3 frames (trager dan Jos)
+    if (frameCount % 3 !== 0) return;
+
+    this.x += floor(random(-1, 2)) * this.stapGrootte;
+    this.y += floor(random(-1, 2)) * this.stapGrootte;
+
+    this.x = constrain(this.x, 0, canvas.width - raster.celGrootte);
+    this.y = constrain(this.y, 0, canvas.height - raster.celGrootte);
   }
 
   // Vijanden worden getekend
@@ -387,7 +395,7 @@ function setup() {
 
   Cindy = new Vijand(200,500);
   Cindy.stapGrootte = 1*eve.stapGrootte;
-  Cindy.sprite = loadImage("images/sprites/Bob100px/Bob.png");
+  Cindy.sprite = loadImage("images/sprites/Cindy100px/Cindy.png");
 
   // laadt raketten in met random snelheid en positie
   raket1 = new Raket(random(500,850), 600, random(5, 11));
@@ -458,11 +466,25 @@ function draw() {
     gameover();
 
   // Check of speler geraakt door vijand
-  if (
-    eve.wordtGeraakt(alice) || 
-    eve.wordtGeraakt(bob) ||
-    eve.wordtGeraakt(Cindy)){
-    leven --;
+  if (eve.wordtGeraakt(alice)) {
+    leven--;
+    // herplaats Alice op willekeurige cel
+    alice.x = floor(random(raster.aantalKolommen)) * raster.celGrootte;
+    alice.y = floor(random(raster.aantalRijen)) * raster.celGrootte;
+  }
+
+  if (eve.wordtGeraakt(bob)) {
+    leven--;
+    // herplaats Bob op willekeurige cel
+    bob.x = floor(random(raster.aantalKolommen)) * raster.celGrootte;
+    bob.y = floor(random(raster.aantalRijen)) * raster.celGrootte;
+  }
+
+  if (eve.wordtGeraakt(Cindy)) {
+    leven--;
+    // herplaats Cindy op willekeurige cel
+    Cindy.x = floor(random(raster.aantalKolommen)) * raster.celGrootte;
+    Cindy.y = floor(random(raster.aantalRijen)) * raster.celGrootte;
   }
   
   // Check of speler geraakt door raket en reset raketten positie
@@ -531,7 +553,7 @@ function mousePressed() {
 
   //Terugknop in het credits-scherm zodat je terug kan naar het beginscherm
   else if (schermStatus === 2) {
-    let terugKnop = { x: width / 2 - 100, y: height - 150, w: 200, h: 60 };
+    var terugKnop = { x: width / 2 - 100, y: height - 150, w: 200, h: 60 };
     if (
       mouseX > terugKnop.x &&
       mouseX < terugKnop.x + terugKnop.w &&
