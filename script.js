@@ -39,7 +39,7 @@ function tekenOmgekeerdePiramide(aantalLagen) {
   pop();
 }
 
-// variabel bal (de speler kan nog steeds niet checken als de bal is geraakt)
+// variabel bal
 var bal = {
   diameter: 40,
   straal: null,
@@ -48,11 +48,11 @@ var bal = {
   snelheidX: 16,
   snelheidY: 10,
 
-  // Bal beweegt volgens 
+  // Bal beweegt volgens snelheid
   beweeg() {
     this.x += this.snelheidX;
     this.y += this.snelheidY;
-
+    // Check of bal de rand raakt
     if (this.x < this.straal || this.x > canvas.width - this.straal) {
       this.snelheidX *= -1;
     }
@@ -122,6 +122,14 @@ teken() {
 
   pop();
 }
+wordtGeraakt() {
+      if (dist(mouseX,mouseY,this.x,this.y) == this.rij, this.kolom) {
+          fill('purple');
+      }
+  else {
+  return false;
+      }
+    }
 }
 
 // speler
@@ -396,7 +404,7 @@ function draw() {
     bal.x = random(bal.straal, canvas.width - bal.straal);
     bal.y = random(bal.straal, canvas.height - bal.straal);
   }
-
+  
   // Check of speler dood
   if (leven == 0){
       gameover();
