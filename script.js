@@ -34,18 +34,16 @@ function beginScherm() {
   textSize(24);
   fill(200);
   //Uitleg
-  text("Gebruik WASD om te bewegen\nOntwijk raketten en vijanden\nEet de bal voor levens\nJe hebt maar 30 seconden!!", width / 2, height / 2 - 50);
+  text("Gebruik WASD om te bewegen\nOntwijk raketten en vijanden\nEet de bal voor levens (5 levens max)\nJe hebt maar 30 seconden!!", width / 2, height / 2 - 50);
   pop();
 
   //knoppen tekenen
   startKnop = { x: width / 2 - 100, y: height / 2 + 50, w: 200, h: 60, tekst: "START" };
   creditsKnop = { x: width / 2 - 100, y: height / 2 + 130, w: 200, h: 60, tekst: "CREDITS" };
-  sluitKnop = { x: width / 2 - 100, y: height / 2 + 210, w: 200, h: 60, tekst: "SLUITEN" };
 
   //tekenKnop functie voor alle knoppen zodat ze werken
   tekenKnop(startKnop);
   tekenKnop(creditsKnop);
-  tekenKnop(sluitKnop);
 }
 
 // functie voor knoppen
@@ -76,6 +74,7 @@ function tekenKnop(knop) {
 }
 
 function toonCredits() {
+  push();
   background(20);
   fill(255);
   textAlign(CENTER, CENTER);
@@ -84,6 +83,7 @@ function toonCredits() {
 
   textSize(24);
   text("Gemaakt door: Justin Fung en Lukas Li\n\nOntwikkeld in p5.js", width / 2, height / 2);
+  pop();
 
   // Terugknop
   let terugKnop = { x: width / 2 - 100, y: height - 150, w: 200, h: 60, tekst: "TERUG" };
@@ -526,20 +526,6 @@ function mousePressed() {
       mouseY < creditsKnop.y + creditsKnop.h
     ) {
       schermStatus = 2; // naar credits
-    }
-    // SLUITEN knop
-    else if (
-      mouseX > sluitKnop.x &&
-      mouseX < sluitKnop.x + sluitKnop.w &&
-      mouseY > sluitKnop.y &&
-      mouseY < sluitKnop.y + sluitKnop.h
-    ) {
-      background(0);
-      fill(255);
-      textSize(40);
-      textAlign(CENTER, CENTER);
-      text("Spel afgesloten.", width / 2, height / 2);
-      noLoop(); // stopt spel
     }
   }
 
