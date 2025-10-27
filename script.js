@@ -3,6 +3,7 @@ leven = 3
 // tijd van timer
 timer = 30
 
+// variabel voor beginscherm
 nummer = 1
 // variabelen voor omgekeerde piramide
 var aantalLagen = 100;
@@ -14,28 +15,29 @@ var raket1;
 var raket2;
 var raket3;
 
-// beginscherm
 function beginScherm() {
+  background(0);
   push();
   noFill();
-  stroke(50,250,200,.8);
+  stroke(50,250,200,0.8);
   strokeWeight(5);
-  textSize(140);
-  text(" OVERLOPER");
-  textSize(32);
+  textAlign(CENTER, CENTER);
+
+  textSize(100);
+  fill(255);
+  text("OVERLOPER", width / 2, height / 2 - 100);
+
+  textSize(24);
   strokeWeight(2);
-  fill(0,0,0,0.25);
-  text("\nGebruik de WASD om te bewegen\nen ontwijk raketten en vijanden.\nLET OP: Er loopt een timer\n\nDruk op een toets om te beginnen.\n");
+  fill(200);
+  text("Gebruik WASD om te bewegen\nOntwijk raketten en vijanden\nLet op:Er is alleen 30 sec\nEet de bal voor levens, maar max. 5 levens\n\nDruk op een toets om te beginnen", width / 2, height / 2 + 50);
   pop();
-  if (keyIsPressed) {
-    nummer = 0
-  }
 }
 
 // teken omgekeerde piramide
 function tekenOmgekeerdePiramide(aantalLagen) {
-  let breedte = 900 / aantalLagen;
-  let hoogte = breedte / 2;
+  var breedte = 900 / aantalLagen;
+  var hoogte = breedte / 2;
 
   push(); // alleen voor piramide
   translate(0, 0);
@@ -46,7 +48,7 @@ function tekenOmgekeerdePiramide(aantalLagen) {
   // omgekeerde piramide
   function recursieveLaag(n) {
     if (n > 0) {
-      for (let nr = 0; nr < n; nr++) {
+      for (var nr = 0; nr < n; nr++) {
         rect(nr * breedte, 0, breedte, hoogte);
       }
       translate(breedte / 2, hoogte);
@@ -73,7 +75,7 @@ var bal = {
   beweeg() {
     this.x += this.snelheidX;
     this.y += this.snelheidY;
-    // Check of bal de rand raakt
+    // Check of bal de rand raakt, dan richting omkeren
     if (this.x < this.straal || this.x > canvas.width - this.straal) {
       this.snelheidX *= -1;
     }
@@ -81,7 +83,7 @@ var bal = {
       this.snelheidY *= -1;
     }
   },
-
+  // Bal wordt getekend
   teken() {
     push();
     fill(0,255,0);
@@ -92,9 +94,7 @@ var bal = {
   // Check bal geraakt door Jos
   wordtGeraakt(jos) {
     // bereken afstand tussen bal en Jos
-    let afstand = dist(this.x, this.y, jos.x + raster.celGrootte / 2, jos.y + raster.celGrootte / 2);
-    //console.log(afstand);
-    //text(afstand, 300, 300);
+    var afstand = dist(this.x, this.y, jos.x + raster.celGrootte / 2, jos.y + raster.celGrootte / 2);
     // check als afstand < balstraal + halve cel
     if (afstand < this.straal + raster.celGrootte * 0.5) {
       return true;
@@ -106,52 +106,50 @@ var bal = {
 
 // Raster wordt gegenereerd
 class Raster {
-  constructor(r,k) {
+  constructor(r, k) {
     this.aantalRijen = r;
     this.aantalKolommen = k;
     this.celGrootte = null;
   }
-//CelGrootte berekenen
+
+  // Celgrootte berekenen
   berekenCelGrootte() {
-    this.celGrootte = canvas.width / this.aantalKolommen;
+    this.celGrootte = width / this.aantalKolommen;
   }
 
-// Raster wordt getekend met blauwe rand
-teken() {
-  push();
-  noFill();
+  // Raster tekenen
+  teken() {
+    push();
+    stroke(100);
+    strokeWeight(1);
+    // Dubbele for-loop voor tekenen van raster
+    for (var rij = 0; rij < this.aantalRijen; rij++) {
+      for (var kolom = 0; kolom < this.aantalKolommen; kolom++) {
+        var x = kolom * this.celGrootte;
+        var y = rij * this.celGrootte;
 
-  // loop door elke rij
-  for (var rij = 0; rij < this.aantalRijen; rij++) {
-    // loop door elke kolom
-    for (var kolom = 0; kolom < this.aantalKolommen; kolom++) {
-      // check of cel een randcel is
-      if (
-        // rij/kolom 0, want dat is buitenste rij/kolom
-        rij === 0 || 
-        rij === this.aantalRijen - 1 || 
-        kolom === 0 || 
-        kolom === this.aantalKolommen - 1
-      ) {
-        fill('lightblue'); // randcellen blauw
-      } else {
-        fill('transparent'); // binnen cellen grijs
+        // check of randcel
+        var Randcel =
+          rij === 0 ||
+          rij === this.aantalRijen - 1 ||
+          kolom === 0 ||
+          kolom === this.aantalKolommen - 1;
+
+        if (Randcel) {
+          // check of muis in cel is
+          if (mouseX > x && mouseX < x + this.celGrootte && mouseY > y && mouseY < y + this.celGrootte) {
+            fill('darkblue'); // wordt donkerblauw als muis op cel is
+          } else {
+            fill('lightblue'); // wordt lichtblauw als normale randcel is
+          }
+        } else {
+          noFill();
+        }
+        rect(x, y, this.celGrootte, this.celGrootte);
       }
-      // teken cel
-      rect(kolom * this.celGrootte, rij * this.celGrootte, this.celGrootte, this.celGrootte);
     }
+    pop();
   }
-
-  pop();
-}
-wordtGeraakt() {
-      if (dist(mouseX,mouseY,this.x,this.y) == this.rij, this.kolom) {
-          fill('purple');
-      }
-  else {
-  return false;
-      }
-    }
 }
 
 // speler
@@ -165,7 +163,7 @@ class Jos {
     this.gehaald = false;
   }
 
-  // Jos beweegt met pijltjes
+  // Jos beweegt met WASD
   beweeg() {
     if (keyIsDown(65)) {
       this.x -= this.stapGrootte;
@@ -183,10 +181,10 @@ class Jos {
       this.y += this.stapGrootte;
       this.frameNummer = 5;
     }
-
+    // Jos blijft binnen canvas
     this.x = constrain(this.x,0,canvas.width);
     this.y = constrain(this.y,0,canvas.height - raster.celGrootte);
-
+  
     if (this.x == canvas.width) {
       this.gehaald = true;
     }
@@ -216,7 +214,6 @@ class Raket {
     this.y = y;
     this.snelheid = snelheid; // snelheid van raket
     this.sprite = null;
-
   }
 
   beweeg() {
@@ -230,8 +227,6 @@ class Raket {
       this.y = height - 50;
       this.snelheid = -this.snelheid; // richting omkeren naar boven
     }
-
-
   }
 
   toon() {
@@ -240,9 +235,9 @@ class Raket {
 
   wordtGeraakt(jos) {
     // Bereken de afstand tussen de raket en Jos (midden van de raket, want this.x en this.y zijn de linker bovenhoek)
-      let raketMiddenX = this.x + raster.celGrootte / 2;
-      let raketMiddenY = this.y + raster.celGrootte / 2;
-      let afstand = dist(raketMiddenX, raketMiddenY, jos.x + raster.celGrootte / 2, jos.y + raster.celGrootte / 2);
+      var raketMiddenX = this.x + raster.celGrootte / 2;
+      var raketMiddenY = this.y + raster.celGrootte / 2;
+      var afstand = dist(raketMiddenX, raketMiddenY, jos.x + raster.celGrootte / 2, jos.y + raster.celGrootte / 2);
       return afstand < this.straal + raster.celGrootte / 2;
   }
 
@@ -261,7 +256,7 @@ class Vijand {
   beweeg() {
     this.x += floor(random(-1,2))*this.stapGrootte;
     this.y += floor(random(-1,2))*this.stapGrootte;
-
+    // Vijanden blijven binnen canvas
     this.x = constrain(this.x,0,canvas.width - raster.celGrootte);
     this.y = constrain(this.y,0,canvas.height - raster.celGrootte);
   }
@@ -272,10 +267,9 @@ class Vijand {
   }
 }
 
-// achtergronden
+// achtergrond
 function preload() {
   brug = loadImage("images/backgrounds/dame_op_brug_1800.jpg");
-  //loadImage("images/sprites/Raket.jpg");
 }
 
 // laadt textsize verloren / gewonnen in
@@ -286,17 +280,11 @@ function gameover(){
   fill('white');
   text("Je hebt verloren...",30,300);
   
-  /*
-  dood = loadimage("images/sprites/flatboy/Dead(15).png")
-  dood.toon();
-  */
-  
   // COMMENTAAR
   commentaar = ["Jammer","Probeer opnieuw","Geef niet op!","Kom op!","Helaas", "Je kunt het"]
   
   // math.floor = naar beneden afronden + random = random commentaar
   text(commentaar[Math.floor(Math.random() * commentaar.length)],50,400)
-  
   noLoop();
 }
   
@@ -362,11 +350,12 @@ function setup() {
     bal.y = canvas.height/4;
 }
 
-// Tekent alles op scherm + code speler raakt vijand / raket
+// Tekent alles op scherm
 function draw() {
-  // Check of speler op beginscherm
-  while (nummer = 1){
+  // Tekent beginscherm
+  if (nummer === 1) {
     beginScherm();
+    return; // zorgt dat de rest van het spel niet begint
   }
   
   background(brug);
@@ -395,7 +384,7 @@ function draw() {
   bal.beweeg();
   bal.teken();
   
-  // Levens (afbeeldingen komen ooit hier)
+  // Levens (afbeeldingen komen misschien hier)
   text("Aantal levens = " +leven+"",1,25);
 
   // Timer
@@ -404,6 +393,7 @@ function draw() {
   if (frameCount % 10 == 0 && timer > 0) {
     timer --;
   }
+
   // Check of timer op is
   if (timer == 0)
     gameover();
@@ -440,9 +430,9 @@ function draw() {
     // Reset bal positie
     bal.x = random(bal.straal, canvas.width - bal.straal);
     bal.y = random(bal.straal, canvas.height - bal.straal);
-    // niet meer dan 3 levens
-    if (leven >= 3){
-      leven = 3;
+    // niet meer dan 5 levens
+    if (leven >= 5){
+      leven = 5;
     }
   }
   
@@ -454,5 +444,12 @@ function draw() {
   // Check of speler gewonnen
   if (eve.gehaald) {
     gewonnen();
+  }
+}
+
+// Zorgt dat het spel begint als je op een toets drukt
+function keyPressed() {
+  if (nummer === 1) {
+    nummer = 0; // stopt beginscherm, spel begint
   }
 }
