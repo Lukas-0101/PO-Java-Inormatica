@@ -1,6 +1,9 @@
 //aantal levens
 leven = 3
+// tijd van timer
+timer = 30
 
+nummer = 1
 // variabelen voor omgekeerde piramide
 var aantalLagen = 100;
 var breedte;
@@ -10,6 +13,24 @@ var hoogte;
 var raket1;
 var raket2;
 var raket3;
+
+// beginscherm
+function beginScherm() {
+  push();
+  noFill();
+  stroke(50,250,200,.8);
+  strokeWeight(5);
+  textSize(140);
+  text(" OVERLOPER");
+  textSize(32);
+  strokeWeight(2);
+  fill(0,0,0,0.25);
+  text("\nGebruik de WASD om te bewegen\nen ontwijk raketten en vijanden.\nLET OP: Er loopt een timer\n\nDruk op een toets om te beginnen.\n");
+  pop();
+  if (keyIsPressed) {
+    nummer = 0
+  }
+}
 
 // teken omgekeerde piramide
 function tekenOmgekeerdePiramide(aantalLagen) {
@@ -94,6 +115,7 @@ class Raster {
   berekenCelGrootte() {
     this.celGrootte = canvas.width / this.aantalKolommen;
   }
+
 // Raster wordt getekend met blauwe rand
 teken() {
   push();
@@ -342,6 +364,11 @@ function setup() {
 
 // Tekent alles op scherm + code speler raakt vijand / raket
 function draw() {
+  // Check of speler op beginscherm
+  while (nummer = 1){
+    beginScherm();
+  }
+  
   background(brug);
   raster.teken();
 
@@ -371,6 +398,16 @@ function draw() {
   // Levens (afbeeldingen komen ooit hier)
   text("Aantal levens = " +leven+"",1,25);
 
+  // Timer
+  text("Tijd over = " +timer+"",1,50);
+  // timer gaat omlaag gebaseerd op de frameRate dat 10 is
+  if (frameCount % 10 == 0 && timer > 0) {
+    timer --;
+  }
+  // Check of timer op is
+  if (timer == 0)
+    gameover();
+
   // Check of speler geraakt door vijand
   if (
     eve.wordtGeraakt(alice) || 
@@ -385,7 +422,7 @@ function draw() {
     raket1.x = random(500,850);
     raket1.y = 600;
     raket1.snelheid = random(5, 11);
-  } else if (raket2.wordtGeraakt(eve)) {
+  }else if (raket2.wordtGeraakt(eve)) {
     leven--;
     raket2.x = random(500,850);
     raket2.y = 600;
@@ -403,6 +440,10 @@ function draw() {
     // Reset bal positie
     bal.x = random(bal.straal, canvas.width - bal.straal);
     bal.y = random(bal.straal, canvas.height - bal.straal);
+    // niet meer dan 3 levens
+    if (leven >= 3){
+      leven = 3;
+    }
   }
   
   // Check of speler dood
