@@ -5,6 +5,7 @@ timer = 30
 
 // variabel voor beginscherm
 nummer = 1
+
 // variabelen voor omgekeerde piramide
 var aantalLagen = 100;
 var breedte;
@@ -15,23 +16,78 @@ var raket1;
 var raket2;
 var raket3;
 
-function beginScherm() {
-  background(0);
-  push();
-  noFill();
-  stroke(50,250,200,0.8);
-  strokeWeight(5);
-  textAlign(CENTER, CENTER);
+// knoppen voor beginscherm
+var startKnop, creditsKnop, sluitKnop;
 
-  textSize(100);
+// status voor welk scherm tonen
+// 1 = beginscherm, 2 = credits, 0 = spel sluiten
+var schermStatus = 1;
+
+function beginScherm() {
+  push(); // push en pop zorgt ervoor dat de achtergrond niet verdwijnt
+  background(0);
+  textAlign(CENTER, CENTER);
   fill(255);
-  text("OVERLOPER", width / 2, height / 2 - 100);
+  textSize(100);
+  text("OVERLOPER", width / 2, height / 2 - 150);
 
   textSize(24);
-  strokeWeight(2);
   fill(200);
-  text("Gebruik WASD om te bewegen\nOntwijk raketten en vijanden\nLet op:Er is alleen 30 sec\nEet de bal voor levens, maar max. 5 levens\n\nDruk op een toets om te beginnen", width / 2, height / 2 + 50);
+  //Uitleg
+  text("Gebruik WASD om te bewegen\nOntwijk raketten en vijanden\nEet de bal voor levens\nJe hebt maar 30 seconden!!", width / 2, height / 2 - 50);
   pop();
+
+  //knoppen tekenen
+  startKnop = { x: width / 2 - 100, y: height / 2 + 50, w: 200, h: 60, tekst: "START" };
+  creditsKnop = { x: width / 2 - 100, y: height / 2 + 130, w: 200, h: 60, tekst: "CREDITS" };
+  sluitKnop = { x: width / 2 - 100, y: height / 2 + 210, w: 200, h: 60, tekst: "SLUITEN" };
+
+  //tekenKnop functie voor alle knoppen zodat ze werken
+  tekenKnop(startKnop);
+  tekenKnop(creditsKnop);
+  tekenKnop(sluitKnop);
+}
+
+// functie voor knoppen
+function tekenKnop(knop) {
+  push();
+  // kleur anders als muis erop is
+  if (
+    mouseX > knop.x &&
+    mouseX < knop.x + knop.w &&
+    mouseY > knop.y &&
+    mouseY < knop.y + knop.h
+  ) {
+    // lichtblauw
+    fill(100, 200, 255);
+  } else {
+    // donkerblauw
+    fill(50, 150, 200);
+  }
+  // teken de knoppen met waarden knoppen in beginscherm
+  rect(knop.x, knop.y, knop.w, knop.h, 10);
+
+  fill(0);
+  textSize(28);
+  textAlign(CENTER, CENTER);
+  // tekst in knoppen
+  text(knop.tekst, knop.x + knop.w / 2, knop.y + knop.h / 2);
+  pop();
+}
+
+function toonCredits() {
+  background(20);
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(60);
+  text("CREDITS", width / 2, 100);
+
+  textSize(24);
+  text("Gemaakt door: Justin Fung en Lukas Li\n\nOntwikkeld in p5.js", width / 2, height / 2);
+
+  // Terugknop
+  let terugKnop = { x: width / 2 - 100, y: height - 150, w: 200, h: 60, tekst: "TERUG" };
+  tekenKnop(terugKnop);
 }
 
 // teken omgekeerde piramide
@@ -353,9 +409,12 @@ function setup() {
 // Tekent alles op scherm
 function draw() {
   // Tekent beginscherm
-  if (nummer === 1) {
+  if (schermStatus === 1) {
     beginScherm();
-    return; // zorgt dat de rest van het spel niet begint
+    return;
+  } else if (schermStatus === 2) {
+    toonCredits();
+    return;
   }
   
   background(brug);
@@ -448,8 +507,52 @@ function draw() {
 }
 
 // Zorgt dat het spel begint als je op een toets drukt
-function keyPressed() {
-  if (nummer === 1) {
-    nummer = 0; // stopt beginscherm, spel begint
+function mousePressed() {
+  if (schermStatus === 1) {
+    // START knop
+    if (
+      mouseX > startKnop.x &&
+      mouseX < startKnop.x + startKnop.w &&
+      mouseY > startKnop.y &&
+      mouseY < startKnop.y + startKnop.h
+    ) {
+      schermStatus = 0; // start spel
+    }
+    // CREDITS knop
+    else if (
+      mouseX > creditsKnop.x &&
+      mouseX < creditsKnop.x + creditsKnop.w &&
+      mouseY > creditsKnop.y &&
+      mouseY < creditsKnop.y + creditsKnop.h
+    ) {
+      schermStatus = 2; // naar credits
+    }
+    // SLUITEN knop
+    else if (
+      mouseX > sluitKnop.x &&
+      mouseX < sluitKnop.x + sluitKnop.w &&
+      mouseY > sluitKnop.y &&
+      mouseY < sluitKnop.y + sluitKnop.h
+    ) {
+      background(0);
+      fill(255);
+      textSize(40);
+      textAlign(CENTER, CENTER);
+      text("Spel afgesloten.", width / 2, height / 2);
+      noLoop(); // stopt spel
+    }
+  }
+
+  //Terugknop in het credits-scherm zodat je terug kan naar het beginscherm
+  else if (schermStatus === 2) {
+    let terugKnop = { x: width / 2 - 100, y: height - 150, w: 200, h: 60 };
+    if (
+      mouseX > terugKnop.x &&
+      mouseX < terugKnop.x + terugKnop.w &&
+      mouseY > terugKnop.y &&
+      mouseY < terugKnop.y + terugKnop.h
+    ) {
+      schermStatus = 1; //terug naar beginscherm
+    }
   }
 }
